@@ -1,0 +1,39 @@
+# Environment and private automation configuration
+.env
+config/private_reports.json
+config/*private*.json
+
+# Browser profiles and session data
+edge-profile/
+profiles/
+User Data/
+
+# Downloads and routed reports
+downloads/
+outputs/
+reports/
+*.xls
+*.xlsx
+*.csv
+*.zip
+*.rar
+*.7z
+*.crdownload
+
+# Python files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Logs and screenshots
+*.log
+*.png
+*.jpg
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

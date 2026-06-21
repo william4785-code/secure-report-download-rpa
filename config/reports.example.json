@@ -1,0 +1,23 @@
+{
+  "download_dir": "downloads",
+  "login_timeout_seconds": 60,
+  "login_ready_condition_js": "return document.readyState === 'complete';",
+  "menu_ready_condition_js": "return document.readyState === 'complete';",
+  "reports": [
+    {
+      "code": "REPORT_A",
+      "page_hint": "report-a",
+      "ready_condition_js": "document.querySelector('#query-form') !== null",
+      "open_script_js": "console.log('Open REPORT_A using private platform navigation');",
+      "download_script_js": "console.log('Trigger REPORT_A', arguments[0], arguments[1]);",
+      "arguments": ["{month_start}", "{today}"],
+      "destination_dir": "outputs/report_a",
+      "output_prefix": "report_a",
+      "expected_prefixes": ["REPORT_A"],
+      "extension_group": "excel",
+      "allow_any_excel": false,
+      "enabled": true,
+      "experimental": false
+    }
+  ]
+}
