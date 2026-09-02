@@ -36,6 +36,14 @@ For that reason:
   excluded by `.gitignore`.
 - `config/reports.example.json` contains placeholders only and does not operate
   any real system.
+- Pull requests run a public-safety scanner that rejects private configuration,
+  data files, browser artifacts, credentials, non-public URLs, and personal
+  filesystem paths.
+
+The public repository is the reusable automation engine only. Operational
+URLs, selectors, navigation scripts, browser sessions, schedules, data, and
+destination mappings belong in a separate internal deployment boundary and
+must never appear on any branch of this repository.
 
 ## Project Structure
 
@@ -117,3 +125,7 @@ Use this project only with systems and data you are authorized to access.
 Respect access controls, rate limits, audit requirements, terms of service, and
 data-retention policies. Do not use browser automation to bypass security
 controls or authentication requirements.
+
+Security expectations and private disclosure guidance are documented in
+[`SECURITY.md`](SECURITY.md). Development and pull request rules are documented
+in [`CONTRIBUTING.md`](CONTRIBUTING.md).
