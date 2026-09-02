@@ -4,14 +4,16 @@ import pytest
 
 
 def test_runtime_context_formats_dates(rpa_module, monkeypatch):
-    real_date = rpa_module.date
+    from secure_report_download_rpa import runtime_context
+
+    real_date = runtime_context.date
 
     class FixedDate:
         @staticmethod
         def today():
             return real_date(2026, 2, 14)
 
-    monkeypatch.setattr(rpa_module, "date", FixedDate)
+    monkeypatch.setattr(runtime_context, "date", FixedDate)
     context = rpa_module.ReportDownloadPlatform.runtime_context()
 
     assert context["today"] == "2026-02-14"

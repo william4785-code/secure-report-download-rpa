@@ -1,3 +1,11 @@
+Metadata-Version: 2.4
+Name: secure-report-download-rpa
+Version: 0.2.0.dev0
+Summary: Sanitized configurable report-download automation engine
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: selenium<5.0,>=4.20
+
 # Secure Report Download RPA
 
 A configurable Selenium platform for automating authenticated browser reports,
@@ -52,22 +60,10 @@ must never appear on any branch of this repository.
 ├── config/
 │   └── reports.example.json
 ├── scripts/
-│   ├── check_public_safety.py
-│   └── report_download_rpa.py       # backward-compatible entry point
-├── src/secure_report_download_rpa/
-│   ├── browser.py
-│   ├── cli.py
-│   ├── config.py
-│   ├── downloads.py
-│   ├── models.py
-│   ├── navigation.py
-│   ├── platform.py
-│   └── runtime_context.py
-├── tests/
+│   └── report_download_rpa.py
 ├── .env.example
 ├── .gitignore
-├── pyproject.toml
-├── requirements-dev.txt
+├── requirements.txt
 └── README.md
 ```
 
