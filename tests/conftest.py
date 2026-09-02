@@ -1,27 +1,15 @@
 from __future__ import annotations
 
-import importlib.util
-import sys
 from pathlib import Path
 
 import pytest
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = PROJECT_ROOT / "scripts" / "report_download_rpa.py"
-
-
 @pytest.fixture(scope="session")
 def rpa_module():
-    module_name = "report_download_rpa_under_test"
-    spec = importlib.util.spec_from_file_location(module_name, MODULE_PATH)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Unable to load module from {MODULE_PATH}")
+    import secure_report_download_rpa
 
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
-    return module
+    return secure_report_download_rpa
 
 
 @pytest.fixture

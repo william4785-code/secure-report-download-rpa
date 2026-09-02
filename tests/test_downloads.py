@@ -33,19 +33,21 @@ def test_recent_downloads_filter_prefix_extension_and_partial_files(platform):
 def test_route_download_moves_and_timestamps_file(
     platform, rpa_module, tmp_path, monkeypatch
 ):
+    from secure_report_download_rpa import downloads
+
     source = tmp_path / "downloads" / "REPORT_A_result.xlsx"
     source.parent.mkdir(parents=True, exist_ok=True)
     source.write_text("synthetic demo content", encoding="utf-8")
     task = platform.tasks["REPORT_A"]
     monkeypatch.setattr(platform, "wait_for_download", lambda *_: str(source))
-    real_datetime = rpa_module.datetime
+    real_datetime = downloads.datetime
 
     class FixedDateTime:
         @staticmethod
         def now():
             return real_datetime(2026, 1, 2, 3, 4, 5)
 
-    monkeypatch.setattr(rpa_module, "datetime", FixedDateTime)
+    monkeypatch.setattr(downloads, "datetime", FixedDateTime)
     platform.route_download(task, started_at=0)
 
     destination = task.destination_dir / "report_a_20260102_030405.xlsx"

@@ -52,10 +52,22 @@ must never appear on any branch of this repository.
 ├── config/
 │   └── reports.example.json
 ├── scripts/
-│   └── report_download_rpa.py
+│   ├── check_public_safety.py
+│   └── report_download_rpa.py       # backward-compatible entry point
+├── src/secure_report_download_rpa/
+│   ├── browser.py
+│   ├── cli.py
+│   ├── config.py
+│   ├── downloads.py
+│   ├── models.py
+│   ├── navigation.py
+│   ├── platform.py
+│   └── runtime_context.py
+├── tests/
 ├── .env.example
 ├── .gitignore
-├── requirements.txt
+├── pyproject.toml
+├── requirements-dev.txt
 └── README.md
 ```
 
@@ -64,7 +76,7 @@ must never appear on any branch of this repository.
 ```powershell
 python -m venv .venv
 .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -e .
 ```
 
 Microsoft Edge must be installed. Modern Selenium versions can obtain a
@@ -108,6 +120,13 @@ Include experimental tasks:
 
 ```powershell
 python scripts\report_download_rpa.py --include-experimental
+```
+
+The installed package also provides equivalent entry points:
+
+```powershell
+secure-report-download-rpa REPORT_A
+python -m secure_report_download_rpa REPORT_A
 ```
 
 ## Configuration
