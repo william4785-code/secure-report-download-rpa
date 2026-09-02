@@ -86,6 +86,17 @@ compatible driver automatically when network and policy settings allow it.
 
 ## Demo Mode
 
+### Run on GitHub
+
+Open the
+[`Synthetic Demo` workflow](https://github.com/william4785-code/secure-report-download-rpa/actions/workflows/synthetic-demo.yml),
+select **Run workflow**, and download the generated artifact after the run
+finishes. GitHub executes the offline demo and packages both synthetic XLSX and
+ZIP outputs; no credentials, browser session, or operational connection is
+used.
+
+### Run locally
+
 Run the public workflow immediately, without environment variables, a private
 configuration file, Microsoft Edge, or a network connection:
 
