@@ -1,12 +1,19 @@
 # Environment and private automation configuration
 .env
+.env.*
+!.env.example
 config/private_reports.json
 config/*private*.json
+config/*production*.json
+config/*internal*.json
 
 # Browser profiles and session data
 edge-profile/
 profiles/
 User Data/
+Cookies
+Local Storage/
+Session Storage/
 
 # Downloads and routed reports
 downloads/
@@ -19,6 +26,11 @@ reports/
 *.rar
 *.7z
 *.crdownload
+*.parquet
+*.duckdb
+*.sqlite
+*.db
+*.rds
 
 # Python files
 .venv/
@@ -31,6 +43,10 @@ __pycache__/
 *.log
 *.png
 *.jpg
+*.jpeg
+*.gif
+*.har
+*.html
 
 # Editor and OS files
 .vscode/
