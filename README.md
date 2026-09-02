@@ -20,6 +20,7 @@ repository.
 - Routes and timestamps Excel or archive files
 - Isolates report failures and produces a final failure summary
 - Keeps private platform automation in an untracked configuration file
+- Includes an offline Demo Mode using valid synthetic XLSX and ZIP files
 
 ## Security Design
 
@@ -36,6 +37,14 @@ For that reason:
   excluded by `.gitignore`.
 - `config/reports.example.json` contains placeholders only and does not operate
   any real system.
+- Pull requests run a public-safety scanner that rejects private configuration,
+  data files, browser artifacts, credentials, non-public URLs, and personal
+  filesystem paths.
+
+The public repository is the reusable automation engine only. Operational
+URLs, selectors, navigation scripts, browser sessions, schedules, data, and
+destination mappings belong in a separate internal deployment boundary and
+must never appear on any branch of this repository.
 
 ## Project Structure
 
@@ -44,10 +53,23 @@ For that reason:
 ├── config/
 │   └── reports.example.json
 ├── scripts/
-│   └── report_download_rpa.py
+│   ├── check_public_safety.py
+│   └── report_download_rpa.py       # backward-compatible entry point
+├── src/secure_report_download_rpa/
+│   ├── browser.py
+│   ├── cli.py
+│   ├── config.py
+│   ├── demo.py
+│   ├── downloads.py
+│   ├── models.py
+│   ├── navigation.py
+│   ├── platform.py
+│   └── runtime_context.py
+├── tests/
 ├── .env.example
 ├── .gitignore
-├── requirements.txt
+├── pyproject.toml
+├── requirements-dev.txt
 └── README.md
 ```
 
@@ -56,11 +78,41 @@ For that reason:
 ```powershell
 python -m venv .venv
 .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -e .
 ```
 
 Microsoft Edge must be installed. Modern Selenium versions can obtain a
 compatible driver automatically when network and policy settings allow it.
+
+## Demo Mode
+
+### Run on GitHub
+
+Open the
+[`Synthetic Demo` workflow](https://github.com/william4785-code/secure-report-download-rpa/actions/workflows/synthetic-demo.yml),
+select **Run workflow**, and download the generated artifact after the run
+finishes. GitHub executes the offline demo and packages both synthetic XLSX and
+ZIP outputs; no credentials, browser session, or operational connection is
+used.
+
+### Run locally
+
+Run the public workflow immediately, without environment variables, a private
+configuration file, Microsoft Edge, or a network connection:
+
+```powershell
+python -m secure_report_download_rpa --demo
+```
+
+The command creates a valid synthetic XLSX download, detects it using the same
+rules as the operational engine, and routes it to a timestamped path under the
+ignored `demo_output/` directory. To include the synthetic archive example:
+
+```powershell
+python -m secure_report_download_rpa --demo --include-experimental
+```
+
+See [`docs/DEMO.md`](docs/DEMO.md) for report selection and output options.
 
 ## Private Configuration
 
@@ -102,6 +154,13 @@ Include experimental tasks:
 python scripts\report_download_rpa.py --include-experimental
 ```
 
+The installed package also provides equivalent entry points:
+
+```powershell
+secure-report-download-rpa REPORT_A
+python -m secure_report_download_rpa REPORT_A
+```
+
 ## Configuration
 
 See `.env.example` for:
@@ -117,3 +176,7 @@ Use this project only with systems and data you are authorized to access.
 Respect access controls, rate limits, audit requirements, terms of service, and
 data-retention policies. Do not use browser automation to bypass security
 controls or authentication requirements.
+
+Security expectations and private disclosure guidance are documented in
+[`SECURITY.md`](SECURITY.md). Development and pull request rules are documented
+in [`CONTRIBUTING.md`](CONTRIBUTING.md).

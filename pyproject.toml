@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secure-report-download-rpa"
+version = "0.2.0.dev0"
+description = "Sanitized configurable report-download automation engine"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["selenium>=4.20,<5.0"]
+
+[project.scripts]
+secure-report-download-rpa = "secure_report_download_rpa.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers --cov=secure_report_download_rpa --cov-report=term-missing --cov-fail-under=60"
+
+[tool.coverage.run]
+branch = true
+source = ["secure_report_download_rpa"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_also = [
+  "if __name__ == .__main__.:",
+]
