@@ -1,2 +1,0 @@
-[console_scripts]
-secure-report-download-rpa = secure_report_download_rpa.cli:main
