@@ -16,3 +16,7 @@ def test_safety_scan_rejects_runtime_data_path():
 
 def test_safety_scan_allows_documented_example_url():
     assert text_violations("https://internal-platform.example.com/") == []
+
+
+def test_safety_scan_allows_public_office_document_namespace():
+    assert text_violations("http://schemas.openxmlformats.org/package/2006") == []

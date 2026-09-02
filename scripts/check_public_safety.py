@@ -56,6 +56,7 @@ ALLOWED_URL_HOSTS = {
     "internal-platform.example.com",
     "pypi.org",
     "python.org",
+    "schemas.openxmlformats.org",
     "www.python.org",
 }
 

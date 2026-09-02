@@ -4,6 +4,7 @@ import glob
 import os
 import shutil
 import time
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 
@@ -11,9 +12,15 @@ from .models import EXCEL_EXTENSIONS, ReportTask
 
 
 class DownloadManager:
-    def __init__(self, download_dir: Path, timeout: int):
+    def __init__(
+        self,
+        download_dir: Path,
+        timeout: int,
+        timestamp_factory: Callable[[], str] | None = None,
+    ):
         self.download_dir = download_dir
         self.timeout = timeout
+        self.timestamp_factory = timestamp_factory
 
     def get_recent_downloads(
         self,
@@ -66,7 +73,11 @@ class DownloadManager:
     def route_source(self, task: ReportTask, source: str | Path) -> Path:
         task.destination_dir.mkdir(parents=True, exist_ok=True)
         extension = Path(source).suffix
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = (
+            self.timestamp_factory()
+            if self.timestamp_factory
+            else datetime.now().strftime("%Y%m%d_%H%M%S")
+        )
         destination = task.destination_dir / (
             f"{task.output_prefix}_{timestamp}{extension}"
         )
