@@ -20,6 +20,7 @@ repository.
 - Routes and timestamps Excel or archive files
 - Isolates report failures and produces a final failure summary
 - Keeps private platform automation in an untracked configuration file
+- Includes an offline Demo Mode using valid synthetic XLSX and ZIP files
 
 ## Security Design
 
@@ -58,6 +59,7 @@ must never appear on any branch of this repository.
 │   ├── browser.py
 │   ├── cli.py
 │   ├── config.py
+│   ├── demo.py
 │   ├── downloads.py
 │   ├── models.py
 │   ├── navigation.py
@@ -81,6 +83,25 @@ pip install -e .
 
 Microsoft Edge must be installed. Modern Selenium versions can obtain a
 compatible driver automatically when network and policy settings allow it.
+
+## Demo Mode
+
+Run the public workflow immediately, without environment variables, a private
+configuration file, Microsoft Edge, or a network connection:
+
+```powershell
+python -m secure_report_download_rpa --demo
+```
+
+The command creates a valid synthetic XLSX download, detects it using the same
+rules as the operational engine, and routes it to a timestamped path under the
+ignored `demo_output/` directory. To include the synthetic archive example:
+
+```powershell
+python -m secure_report_download_rpa --demo --include-experimental
+```
+
+See [`docs/DEMO.md`](docs/DEMO.md) for report selection and output options.
 
 ## Private Configuration
 

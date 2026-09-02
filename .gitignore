@@ -19,6 +19,7 @@ Session Storage/
 downloads/
 outputs/
 reports/
+demo_output/
 *.xls
 *.xlsx
 *.csv
