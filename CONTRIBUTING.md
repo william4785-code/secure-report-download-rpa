@@ -36,6 +36,12 @@ python -m compileall -q scripts
 
 After the test suite is introduced, all pytest and lint checks must also pass.
 
+Run the unit suite with:
+
+```powershell
+python -m pytest
+```
+
 ## Pull Request Scope
 
 A pull request must describe:
