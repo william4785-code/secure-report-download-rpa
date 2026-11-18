@@ -61,5 +61,6 @@ def build_tasks(config: dict[str, Any], base_dir: Path) -> dict[str, ReportTask]
             experimental=bool(item.get("experimental", False)),
             open_wait_seconds=float(item.get("open_wait_seconds", 3)),
             allow_any_excel=bool(item.get("allow_any_excel", False)),
+            scan_new_windows_only=bool(item.get("scan_new_windows_only", False)),
         )
     return tasks

@@ -1,6 +1,13 @@
 {
   "download_dir": "downloads",
-  "login_timeout_seconds": 60,
+  "dns_consecutive_successes": 3,
+  "dns_timeout_seconds": 60,
+  "dns_check_interval_seconds": 2,
+  "edge_start_attempts": 3,
+  "edge_retry_delay_seconds": 5,
+  "login_timeout_seconds": 180,
+  "network_recovery_timeout_seconds": 120,
+  "network_recovery_grace_seconds": 30,
   "login_ready_condition_js": "return document.readyState === 'complete';",
   "menu_ready_condition_js": "return document.readyState === 'complete';",
   "reports": [
@@ -16,6 +23,7 @@
       "expected_prefixes": ["REPORT_A"],
       "extension_group": "excel",
       "allow_any_excel": false,
+      "scan_new_windows_only": true,
       "enabled": true,
       "experimental": false
     }

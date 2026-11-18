@@ -21,6 +21,30 @@ repository.
 - Isolates report failures and produces a final failure summary
 - Keeps private platform automation in an untracked configuration file
 - Includes an offline Demo Mode using valid synthetic XLSX and ZIP files
+- Requires consecutive successful DNS checks before starting the browser
+- Retries Microsoft Edge startup up to a configurable limit
+- Supports a long interactive-login window plus a recovery grace period
+- Can restrict a report search to windows opened by the current task
+
+## Stability Hardening
+
+The public engine includes generalized safeguards derived from production
+reliability work without publishing any operational platform detail:
+
+- Browser startup is blocked until DNS resolution succeeds for three
+  consecutive checks by default.
+- Microsoft Edge startup is attempted up to three times, with a configurable
+  delay between attempts.
+- Interactive authentication may wait up to 180 seconds by default. If network
+  stability returns after that window, the login-ready check receives a final
+  30-second grace period.
+- The main application window is remembered after login. Reports configured
+  with `scan_new_windows_only` search only handles created by that report, so
+  stale or unresponsive report windows are not revisited.
+
+All thresholds are examples and may be overridden in the untracked private
+configuration. No real URL, frame name, selector, account, or report code is
+included here.
 
 ## Security Design
 
@@ -46,6 +70,10 @@ URLs, selectors, navigation scripts, browser sessions, schedules, data, and
 destination mappings belong in a separate internal deployment boundary and
 must never appear on any branch of this repository.
 
+The internal orchestration GUI and downstream ETL entry point also remain in
+that deployment boundary. This repository does not contain company workflow
+rules, SQL, database credentials, or production data movement logic.
+
 ## Project Structure
 
 ```text
@@ -59,6 +87,7 @@ must never appear on any branch of this repository.
 │   ├── browser.py
 │   ├── cli.py
 │   ├── config.py
+│   ├── connectivity.py
 │   ├── demo.py
 │   ├── downloads.py
 │   ├── models.py

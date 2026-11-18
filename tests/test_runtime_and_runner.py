@@ -35,7 +35,10 @@ def test_render_arguments_preserves_non_string_values(platform, monkeypatch):
 
 
 def test_run_aggregates_failed_reports(platform, monkeypatch):
-    fake_driver = object()
+    class FakeDriver:
+        current_window_handle = "main"
+
+    fake_driver = FakeDriver()
     monkeypatch.setattr(platform, "create_driver", lambda: fake_driver)
     monkeypatch.setattr(platform, "wait_for_login", lambda _driver: None)
     monkeypatch.setattr(

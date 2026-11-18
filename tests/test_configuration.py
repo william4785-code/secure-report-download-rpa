@@ -45,6 +45,7 @@ def test_resolve_path_anchors_relative_values(rpa_module, tmp_path):
 def test_report_tasks_map_extension_groups(platform, rpa_module):
     assert platform.tasks["REPORT_A"].extensions == rpa_module.EXCEL_EXTENSIONS
     assert platform.tasks["REPORT_B"].extensions == rpa_module.ARCHIVE_EXTENSIONS
+    assert platform.tasks["REPORT_A"].scan_new_windows_only is True
 
 
 def test_default_selection_excludes_experimental_tasks(platform):

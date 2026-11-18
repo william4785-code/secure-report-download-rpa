@@ -1,11 +1,18 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Iterable
 
 from selenium.webdriver.common.by import By
 
 
-def switch_to_frame_by_condition(driver, condition_js: str, timeout: int = 40) -> bool:
+def switch_to_frame_by_condition(
+    driver,
+    condition_js: str,
+    timeout: int = 40,
+    *,
+    handles: Iterable[str] | None = None,
+) -> bool:
     start = time.time()
 
     def scan(depth: int = 0, max_depth: int = 5) -> bool:
@@ -30,8 +37,10 @@ def switch_to_frame_by_condition(driver, condition_js: str, timeout: int = 40) -
                 pass
         return False
 
+    scoped_handles = list(handles) if handles is not None else None
     while time.time() - start < timeout:
-        for handle in driver.window_handles:
+        candidates = scoped_handles if scoped_handles is not None else driver.window_handles
+        for handle in candidates:
             driver.switch_to.window(handle)
             driver.switch_to.default_content()
             if scan():
