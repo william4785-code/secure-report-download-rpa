@@ -25,4 +25,4 @@ class ReportTask:
     experimental: bool = False
     open_wait_seconds: float = 3.0
     allow_any_excel: bool = False
-    scan_new_windows_only: bool = False
+    scoped_report_scan: bool = False

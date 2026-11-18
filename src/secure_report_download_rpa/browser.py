@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import time
+from collections.abc import Callable
 from typing import Any
 
 from selenium import webdriver
@@ -17,6 +18,7 @@ def create_edge_driver(
     *,
     max_attempts: int = 3,
     retry_delay_seconds: float = 5,
+    before_retry: Callable[[], None] | None = None,
 ):
     options = Options()
     options.add_argument(f"--user-data-dir={edge_profile_dir}")
@@ -46,6 +48,8 @@ def create_edge_driver(
                 except Exception:
                     pass
             if attempt < max_attempts:
+                if before_retry is not None:
+                    before_retry()
                 time.sleep(retry_delay_seconds)
 
     raise RuntimeError(

@@ -30,7 +30,7 @@ def report_config(tmp_path):
                 "extension_group": "excel",
                 "enabled": True,
                 "experimental": False,
-                "scan_new_windows_only": True,
+                "scoped_report_scan": True,
             },
             {
                 "code": "REPORT_B",

@@ -3,6 +3,7 @@
   "dns_consecutive_successes": 3,
   "dns_timeout_seconds": 60,
   "dns_check_interval_seconds": 2,
+  "network_connect_timeout_seconds": 5,
   "edge_start_attempts": 3,
   "edge_retry_delay_seconds": 5,
   "login_timeout_seconds": 180,
@@ -23,7 +24,7 @@
       "expected_prefixes": ["REPORT_A"],
       "extension_group": "excel",
       "allow_any_excel": false,
-      "scan_new_windows_only": true,
+      "scoped_report_scan": true,
       "enabled": true,
       "experimental": false
     }
