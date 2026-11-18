@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from . import browser, navigation, runtime_context
+from . import browser, connectivity, navigation, runtime_context
 from .config import build_tasks, get_required_env, resolve_path
 from .downloads import DownloadManager
 from .models import ReportTask
@@ -24,6 +24,15 @@ class ReportDownloadPlatform:
         )
         self.entry_url = get_required_env("PLATFORM_ENTRY_URL")
         self.download_timeout = int(os.getenv("DOWNLOAD_TIMEOUT_SECONDS", "120"))
+        self.dns_successes = int(config.get("dns_consecutive_successes", 3))
+        self.dns_timeout = float(config.get("dns_timeout_seconds", 60))
+        self.dns_interval = float(config.get("dns_check_interval_seconds", 2))
+        self.network_connect_timeout = float(
+            config.get("network_connect_timeout_seconds", 5)
+        )
+        self.edge_start_attempts = int(config.get("edge_start_attempts", 3))
+        self.edge_retry_delay = float(config.get("edge_retry_delay_seconds", 5))
+        self.main_window_handle: str | None = None
         self.download_dir.mkdir(parents=True, exist_ok=True)
         self.tasks = build_tasks(config, self.base_dir)
         self.download_manager = DownloadManager(
@@ -31,16 +40,72 @@ class ReportDownloadPlatform:
         )
 
     def create_driver(self):
+        hostname, port = connectivity.endpoint_from_url(self.entry_url)
+
+        def stable_endpoint_probe() -> None:
+            connectivity.wait_for_stable_endpoint(
+                hostname,
+                port,
+                consecutive_successes=self.dns_successes,
+                timeout=self.dns_timeout,
+                interval=self.dns_interval,
+                connect_timeout=self.network_connect_timeout,
+            )
+
+        stable_endpoint_probe()
         return browser.create_edge_driver(
-            self.entry_url, self.edge_profile_dir, self.download_dir
+            self.entry_url,
+            self.edge_profile_dir,
+            self.download_dir,
+            max_attempts=self.edge_start_attempts,
+            retry_delay_seconds=self.edge_retry_delay,
+            before_retry=stable_endpoint_probe,
         )
 
     @staticmethod
-    def switch_to_frame_by_condition(driver, condition_js: str, timeout: int = 40):
-        return navigation.switch_to_frame_by_condition(driver, condition_js, timeout)
+    def switch_to_report_frame_by_condition(
+        driver,
+        condition_js: str,
+        handles_before_open: set[str],
+        menu_handle: str | None,
+        timeout: int = 60,
+    ):
+        return navigation.switch_to_report_frame_by_condition(
+            driver,
+            condition_js,
+            handles_before_open,
+            menu_handle,
+            timeout,
+        )
+
+    @staticmethod
+    def switch_to_frame_by_condition(
+        driver, condition_js: str, timeout: int = 40, *, handles=None
+    ):
+        return navigation.switch_to_frame_by_condition(
+            driver, condition_js, timeout, handles=handles
+        )
 
     def wait_for_login(self, driver):
-        return browser.wait_for_login(driver, self.config)
+        hostname, port = connectivity.endpoint_from_url(self.entry_url)
+
+        def recovery_probe() -> bool:
+            try:
+                connectivity.wait_for_stable_endpoint(
+                    hostname,
+                    port,
+                    consecutive_successes=self.dns_successes,
+                    timeout=float(
+                        self.config.get("network_recovery_timeout_seconds", 120)
+                    ),
+                    interval=self.dns_interval,
+                    connect_timeout=self.network_connect_timeout,
+                )
+                return True
+            except TimeoutError:
+                return False
+
+        return browser.wait_for_login(driver, self.config, recovery_probe)
 
     @staticmethod
     def runtime_context() -> dict[str, str]:
@@ -77,18 +142,33 @@ class ReportDownloadPlatform:
                 )
             )
             if not self.switch_to_frame_by_condition(
-                driver, menu_condition, timeout=60
+                driver,
+                menu_condition,
+                timeout=60,
+                handles=[self.main_window_handle] if self.main_window_handle else None,
             ):
                 raise RuntimeError("Main menu frame was not found")
+            menu_handle = driver.current_window_handle
+            handles_before_open = set(driver.window_handles)
             driver.execute_script(task.open_script_js)
             time.sleep(task.open_wait_seconds)
             ready_condition = (
                 f"return location.href.includes({json.dumps(task.page_hint)})"
                 f" && Boolean(({task.ready_condition_js}));"
             )
-            if not self.switch_to_frame_by_condition(
-                driver, ready_condition, timeout=60
-            ):
+            if task.scoped_report_scan:
+                report_ready = self.switch_to_report_frame_by_condition(
+                    driver,
+                    ready_condition,
+                    handles_before_open,
+                    menu_handle,
+                    timeout=60,
+                )
+            else:
+                report_ready = self.switch_to_frame_by_condition(
+                    driver, ready_condition, timeout=60
+                )
+            if not report_ready:
                 raise RuntimeError(f"{task.code} report frame was not found")
             started_at = time.time()
             driver.execute_script(
@@ -123,6 +203,7 @@ class ReportDownloadPlatform:
         print("Selected reports:", ", ".join(task.code for task in selected))
         driver = self.create_driver()
         self.wait_for_login(driver)
+        self.main_window_handle = driver.current_window_handle
         results = {task.code: self.run_task(driver, task) for task in selected}
         failed = [code for code, success in results.items() if not success]
         if failed:
